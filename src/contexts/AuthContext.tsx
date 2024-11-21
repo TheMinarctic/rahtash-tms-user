@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshAccessToken = async () => {
     try {
-      const response = await fetch("http://api.rahtash-tms.ir/api/v1/users/token/refresh/", {
+      const response = await fetch("https://api.rahtash-tms.ir/api/v1/users/token/refresh/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch("http://api.rahtash-tms.ir/api/v1/users/token/", {
+      const response = await fetch("https://api.rahtash-tms.ir/api/v1/users/token/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signup = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      const response = await fetch("http://api.rahtash-tms.ir/api/v1/users/signup/", {
+      const response = await fetch("https://api.rahtash-tms.ir/api/v1/users/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

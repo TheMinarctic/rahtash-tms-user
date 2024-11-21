@@ -117,7 +117,7 @@ const Shipments = () => {
 
   const fetchShipments = async () => {
     try {
-      const response = await fetch("http://api.rahtash-tms.ir/api/v1/shipments/", {
+      const response = await fetch("https://api.rahtash-tms.ir/api/v1/shipments/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -139,7 +139,7 @@ const Shipments = () => {
 
   const handleCreate = async (formData: FormData) => {
     try {
-      const response = await fetch("http://api.rahtash-tms.ir/api/v1/shipments/", {
+      const response = await fetch("https://api.rahtash-tms.ir/api/v1/shipments/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -162,7 +162,7 @@ const Shipments = () => {
     if (!selectedShipment) return;
 
     try {
-      const response = await fetch(`http://api.rahtash-tms.ir/api/v1/shipments/${selectedShipment.id}/`, {
+      const response = await fetch(`https://api.rahtash-tms.ir/api/v1/shipments/${selectedShipment.id}/`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
