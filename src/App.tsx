@@ -6,7 +6,12 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Shipments from "./pages/Shipments";
+
+import ApiProvider from "./contexts/ApiProvider";
+import { NextUIProvider } from "@nextui-org/react";
+
+import SingleShipment from "./pages/SingleShipment";
+import ShipmentPage from "./pages/ShipmentsPage";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
@@ -33,11 +38,20 @@ const AppRoutes = () => {
       />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+
       <Route
         path="/shipments"
         element={
           <ProtectedRoute>
-            <Shipments />
+            <ShipmentPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/shipments/:id"
+        element={
+          <ProtectedRoute>
+            <SingleShipment />
           </ProtectedRoute>
         }
       />
@@ -49,15 +63,19 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <AuthProvider>
-        <TooltipProvider>
-          <AppRoutes />
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <NextUIProvider>
+      <ApiProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <TooltipProvider>
+              <AppRoutes />
+              <Toaster />
+              <Sonner />
+            </TooltipProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </ApiProvider>
+    </NextUIProvider>
   </QueryClientProvider>
 );
 
