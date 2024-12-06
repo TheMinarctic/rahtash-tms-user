@@ -18,7 +18,7 @@ export default function SingleShipment() {
           {/* <Header /> */}
         </div>
 
-        <div className="flex-1  p-5 min-h-screen">
+        <div className="flex-1  min-h-screen">
        
           <Shipment id={id} />
         </div>
