@@ -7,10 +7,10 @@ export default function ShipmentPage() {
   const [open, setOpen] = useState(true);
 
   return (
-    <div dir="ltr" className="flex h-screen"> {/* Set height of the flex container */}
+    <div dir="ltr" className="flex h-full "> {/* Set height of the flex container */}
       <Sidebar open={open} setOpen={setOpen} />
 
-      <div className="flex-1 flex flex-col h-[1100px] md:h-screen bg-gradient-to-r from-gray-800 to-gray-600">
+      <div className="flex-1 flex flex-col  md:h-screen bg-gradient-to-r from-zinc-100 to-zinc-100">
         <div className="md:hidden">
           {/* <Header /> */}
         </div>

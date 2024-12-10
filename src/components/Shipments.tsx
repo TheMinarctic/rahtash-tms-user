@@ -108,13 +108,13 @@ const Shipments = () => {
         <>
       
                 <div dir="ltr" className="mt-0 shadow-md p-5 px-7 rounded-lg">
-                    <h1 className="text-2xl mb-8 mt-8 text-white font-bold">Shipments</h1>
+                    <h1 className="text-2xl mb-8 mt-8 text-black font-bold">Shipments</h1>
                     <Toaster />
                     <div className="mb-6 flex flex-col-reverse md:flex-row gap-6 px-3 justify-between items-center">
                         <input
                             type="text"
                             placeholder="Search..."
-                            className="w-full p-2 border rounded-md text-gray-700 bg-gray-100"
+                            className="w-full p-2 border border-gray-950 rounded-md text-gray-900 bg-gray-100"
                         />
                         <Button className="w-full md:w-1/4" size="lg" onClick={() => setIsModalOpen(true)}>
                             <Plus className="mr-2 h-4 w-4" /> New Shipment
@@ -126,19 +126,19 @@ const Shipments = () => {
                     {/* Shipments List */}
                     <Table className="table">
                         <TableHeader>
-                            <TableColumn className="text-black text-start bg-gray-300">Shipment Name</TableColumn>
-                            <TableColumn className="text-black text-start bg-gray-300">Port of Loading</TableColumn>
-                            <TableColumn className="text-black text-start bg-gray-300 hidden xl:table-cell">Port of Discharge</TableColumn>
-                            <TableColumn className="text-black text-start bg-gray-300 hidden xl:table-cell">Place of Delivery</TableColumn>
-                            <TableColumn className="text-black text-start bg-gray-300">Operation</TableColumn>
+                            <TableColumn className="text-black text-start bg-green-500">Shipment Name</TableColumn>
+                            <TableColumn className="text-black text-start bg-green-500">Port of Loading</TableColumn>
+                            <TableColumn className="text-black text-start bg-green-500 hidden xl:table-cell">Port of Discharge</TableColumn>
+                            <TableColumn className="text-black text-start bg-green-500 hidden xl:table-cell">Place of Delivery</TableColumn>
+                            <TableColumn className="text-black text-start bg-green-500">Operation</TableColumn>
                         </TableHeader>
                         <TableBody>
                             {shipments.map((shipment) => (
                                 <TableRow key={shipment.id} className="border-b text-white leading-loose">
-                                    <TableCell className="text-sm">{shipment.shipment_name || " - "}</TableCell>
-                                    <TableCell className="whitespace-nowrap text-sm">{shipment.port_of_loading || " - "}</TableCell>
-                                    <TableCell className="whitespace-nowrap hidden xl:table-cell">{shipment.port_of_discharge || " - "}</TableCell>
-                                    <TableCell className="whitespace-nowrap hidden xl:table-cell">{shipment.place_of_delivery || " - "}</TableCell>
+                                    <TableCell className="text-sm text-[#3b5df6]">{shipment.shipment_name || " - "}</TableCell>
+                                    <TableCell className="whitespace-nowrap text-sm text-black">{shipment.port_of_loading || " - "}</TableCell>
+                                    <TableCell className="whitespace-nowrap hidden xl:table-cell text-black">{shipment.port_of_discharge || " - "}</TableCell>
+                                    <TableCell className="whitespace-nowrap hidden xl:table-cell text-black">{shipment.place_of_delivery || " - "}</TableCell>
                                     <TableCell>
                                         <div className="flex gap-1 p-2">
                                             <BiSolidEdit onClick={() => navigate(`/shipments/${shipment.id}`)} className="text-primary hover:text-white cursor-pointer text-3xl" />

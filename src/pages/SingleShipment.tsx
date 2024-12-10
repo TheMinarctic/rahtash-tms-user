@@ -13,7 +13,7 @@ export default function SingleShipment() {
     <div dir="ltr" className="flex">
       <Sidebar open={open} setOpen={setOpen} />
 
-      <div className="flex-1 flex flex-col bg-gradient-to-r from-gray-800 to-gray-600">
+      <div className="flex-1 flex flex-col bg-gradient-to-r from-zinc-100 to-zinc-100">
         <div className="md:hidden">
           {/* <Header /> */}
         </div>

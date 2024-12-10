@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
     const Menus: Menu[] = [
         {
             title: "Shipments",
-            icon: <TbTruckDelivery className="w-7 text-mainColor h-7" />,
+            icon: <TbTruckDelivery className="w-7 text-blue-600 h-7" />,
             href: "/shipments",
         },
     ];
@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
                 {Menus.map((Menu, index) => (
                     <li
                         key={index}
-                        className={`flex rounded-md p-2 mb-8 cursor-pointer hover:bg-light-white text-gray-300 text-lg items-center gap-x-4 
+                        className={`flex rounded-md p-2 mb-8 cursor-pointer hover:bg-light-white text-gray-100 text-lg items-center gap-x-4 
                                     ${Menu.title === selectItem ? "bg-[#3e3c3c]" : ""}`}
                         onClick={() => {
                             navigate(Menu.href);
@@ -79,8 +79,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
                     className={`flex rounded-md p-2 mb-8 cursor-pointer hover:bg-light-white text-gray-300 text-lg items-center gap-x-4  `}
                     onClick={logout }
                 >
-                   <BiLogOutCircle className="w-7 text-mainColor h-7" />
-                    <span className={`${!open && "hidden"} origin-left duration-200`}>
+                   <BiLogOutCircle className="w-7 text-mainColor text-blue-600  h-7" />
+                    <span className={`${!open && "hidden"} origin-left text-gray-100 duration-200`}>
                        Log out
                     </span>
                 </li>

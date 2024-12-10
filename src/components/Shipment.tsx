@@ -147,7 +147,7 @@ export default function Shipment({ id }) {
     }
 
     if (error) {
-        return <div className="text-white">{error}</div>;
+        return <div className="text-black">{error}</div>;
     }
 
     return (
@@ -158,65 +158,65 @@ export default function Shipment({ id }) {
                     <div className="flex flex-col">
                         <div className="flex justify-center mt-1 mb-12">
                             <div className="flex items-center gap-4">
-                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-500"></div>
-                                <h1 className="text-xl text-center text-white font-bold">Shipment Detail</h1>
-                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-500"></div>
+                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
+                                <h1 className="text-xl text-center text-black font-bold">Shipment Detail</h1>
+                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
                             </div>
                         </div>
 
                         <div className="grid lg:grid-cols-2 gap-8">
                             <div>
-                                <label className="block text-white pb-2">Shipment Name : </label>
+                                <label className="block text-black pb-2">Shipment Name : </label>
                                 <input
                                     type="text"
                                     value={shipmentName}
                                     onChange={(e) => setShipmentName(e.target.value)}
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
                             </div>
                             <div>
-                                <label className="block text-white pb-2">Lading Number :</label>
+                                <label className="block text-black pb-2">Lading Number :</label>
                                 <input
                                     type="text"
                                     value={ladingNumber}
                                     onChange={(e) => setLadingNumber(e.target.value)}
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
                             </div>
                             <div>
-                                <label className="block text-white pb-2">Containers Number :</label>
+                                <label className="block text-black pb-2">Containers Number :</label>
                                 <input
                                     type="text"
                                     value={numberOfContainers}
                                     onChange={(e) => setNumberOfContainers(e.target.value)}
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
                             </div>
                             <div>
-                                <label className="block text-white pb-2">Loading Port :</label>
+                                <label className="block text-black pb-2">Loading Port :</label>
                                 <input
                                     type="text"
                                     value={portOfLoading}
                                     onChange={(e) => setPortOfLoading(e.target.value)}
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
                             </div>
                             <div>
-                                <label className="block text-white pb-2">Discharge Port :</label>
+                                <label className="block text-black pb-2">Discharge Port :</label>
                                 <input
                                     type="text"
                                     value={portOfDischarge}
                                     onChange={(e) => setPortOfDischarge(e.target.value)}
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
                             </div>
                             <div>
-                                <label className="block text-white pb-2">Delivery Place : </label>
+                                <label className="block text-black pb-2">Delivery Place : </label>
                                 <input
                                     type="text"
                                     value={deliveryPlace}
                                     onChange={(e) => setDeliveryPlace(e.target.value)}
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
                             </div>
 
@@ -224,9 +224,9 @@ export default function Shipment({ id }) {
 
                             <div className="flex justify-center mt-10 mb-12">
                             <div className="flex items-center gap-4">
-                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-500"></div>
-                                <h1 className="text-xl text-center text-white font-bold">Documents</h1>
-                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-500"></div>
+                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
+                                <h1 className="text-xl text-center text-black font-bold">Documents</h1>
+                                <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
                             </div>
                         </div>
 
@@ -234,7 +234,7 @@ export default function Shipment({ id }) {
 
                             {/* Bill of Lading Document */}
                             <div>
-                                <label className="block text-white pb-2">Bill of Lading Document :</label>
+                                <label className="block text-black pb-2">Bill of Lading Document :</label>
                                 <input
                                     type="file"
                                     onChange={(e) => {
@@ -242,15 +242,15 @@ export default function Shipment({ id }) {
                                         setBillOfLadingName(e.target.files[0].name); // Set the file name
                                     }}
                                     accept=".pdf, .doc, .docx"
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
-                                {billOfLadingName && <p className="text-green-400 flex gap-4 mt-2">{billOfLadingName}  <a
+                                {billOfLadingName && <p className="text-primary flex gap-4 mt-2">{billOfLadingName}  <a
                                     href={shipmentData.bill_of_lading_document}
                                     className=" text-blue-400 underline "
                                     target="_blank"
                                     rel="noreferrer"
                                 >
-                                    <VscCloudDownload className="w-6 h-6" />
+                                    <VscCloudDownload className="w-6 h-6 text-green-500" />
                                 </a>
                                 </p>
 
@@ -259,7 +259,7 @@ export default function Shipment({ id }) {
 
                             {/* Packing List */}
                             <div>
-                                <label className="block text-white pb-2">Packing List :</label>
+                                <label className="block text-black pb-2">Packing List :</label>
                                 <input
                                     type="file"
                                     onChange={(e) => {
@@ -267,15 +267,15 @@ export default function Shipment({ id }) {
                                         setPackingListName(e.target.files[0].name); // Set the file name
                                     }}
                                     accept=".pdf, .doc, .docx"
-                                    className="w-full p-2  bg-gray-300 rounded"
+                                    className="w-full p-2  bg-gray-400 rounded"
                                 />
-                                {packingListName && <p className="text-green-400 flex gap-4 mt-2 ">{packingListName}   <a
+                                {packingListName && <p className="text-primary flex gap-4 mt-2 ">{packingListName}   <a
                                     href={shipmentData.packing_list}
                                     className=" text-blue-400 underline "
                                     target="_blank"
                                     rel="noreferrer"
                                 >
-                                    <VscCloudDownload className="w-6 h-6" />
+                                    <VscCloudDownload className="w-6 h-6 text-green-500" />
                                 </a>
                                 </p>
 
@@ -284,7 +284,7 @@ export default function Shipment({ id }) {
 
                             {/* Initial Invoice */}
                             <div>
-                                <label className="block text-white pb-2">Initial Invoice :</label>
+                                <label className="block text-black pb-2">Initial Invoice :</label>
                                 <input
                                     type="file"
                                     onChange={(e) => {
@@ -292,9 +292,9 @@ export default function Shipment({ id }) {
                                         setInitialInvoiceName(e.target.files[0].name); // Set the file name
                                     }}
                                     accept=".pdf, .doc, .docx"
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
-                                {initialInvoiceName && <p className="text-green-400 flex gap-4 mt-2">{initialInvoiceName}
+                                {initialInvoiceName && <p className="text-primary flex gap-4 mt-2">{initialInvoiceName}
 
                                     <a
                                         href={shipmentData.initial_invoice}
@@ -302,7 +302,7 @@ export default function Shipment({ id }) {
                                         target="_blank"
                                         rel="noreferrer"
                                     >
-                                        <VscCloudDownload className="w-6 h-6" />
+                                        <VscCloudDownload className="w-6 h-6 text-green-500" />
                                     </a>
                                 </p>
 
@@ -311,7 +311,7 @@ export default function Shipment({ id }) {
 
                             {/* Final Invoice */}
                             <div>
-                                <label className="block text-white pb-2">Final Invoice :</label>
+                                <label className="block text-black pb-2">Final Invoice :</label>
                                 <input
                                     type="file"
                                     onChange={(e) => {
@@ -319,9 +319,9 @@ export default function Shipment({ id }) {
                                         setFinalInvoiceName(e.target.files[0].name); // Set the file name
                                     }}
                                     accept=".pdf, .doc, .docx"
-                                    className="w-full p-2 bg-gray-300 rounded"
+                                    className="w-full p-2 bg-gray-400 rounded"
                                 />
-                                {finalInvoiceName && <p className="text-green-400 flex gap-4 mt-2"> {finalInvoiceName}
+                                {finalInvoiceName && <p className="text-primary flex gap-4 mt-2"> {finalInvoiceName}
 
                                     <a
                                         href={shipmentData.final_invoice}
@@ -329,7 +329,7 @@ export default function Shipment({ id }) {
                                         target="_blank"
                                         rel="noreferrer"
                                     >
-                                        <VscCloudDownload className="w-6 h-6" />
+                                        <VscCloudDownload className="w-6 h-6 text-green-500" />
                                     </a></p>} {/* Show file name */}
                             </div>
 
@@ -347,12 +347,12 @@ export default function Shipment({ id }) {
                                     }}
                                     className="mr-2"
                                 />
-                                <label className="text-white">Contains Dangerous Goods</label>
+                                <label className="text-black">Contains Dangerous Goods</label>
                             </div>
 
                             {containsDangerousGoods && ( // Show MSDS file input only if checkbox is checked
                                 <div>
-                                    <label className="block text-white pb-2">MSDS Document :</label>
+                                    <label className="block text-black pb-2">MSDS Document :</label>
                                     <input
                                         type="file"
                                         onChange={(e) => {
@@ -360,15 +360,15 @@ export default function Shipment({ id }) {
                                             setMsdsDocumentName(e.target.files[0].name); // Set the file name
                                         }}
                                         accept=".pdf, .doc, .docx" // Accept only document files
-                                        className="w-full p-2 bg-gray-300 rounded"
+                                        className="w-full p-2 bg-gray-400 rounded"
                                     />
-                                    {msdsDocumentName && <p className="text-green-400 flex gap-4 mt-2">{msdsDocumentName}  <a
+                                    {msdsDocumentName && <p className="text-primary flex gap-4 mt-2">{msdsDocumentName}  <a
                                         href={shipmentData.msds_document}
                                         className=" text-blue-400 underline "
                                         target="_blank"
                                         rel="noreferrer"
                                     >
-                                        <VscCloudDownload className="w-6 h-6" />
+                                        <VscCloudDownload className="w-6 h-6 text-green-500" />
                                     </a>
                                     </p>
 
@@ -378,7 +378,7 @@ export default function Shipment({ id }) {
 
                             {/* Additional Documents Section */}
                             <div>
-                                <label className="block text-white pb-2">Additional Documents :</label>
+                                <label className="block text-black pb-2">Additional Documents :</label>
                                 {shipmentData.additional_documents.length > 0 ? (
                                     shipmentData.additional_documents.map((doc, index) => (
                                         <a key={index} href={doc} className="block text-blue-500" target="_blank" rel="noreferrer">
@@ -396,7 +396,7 @@ export default function Shipment({ id }) {
 
                     <div className="mt-10 w-full flex justify-center px-[5%]">
                         <Button
-                            className="w-2/3"
+                            className="w-2/3 hover:bg-green-400 bg-green-500 text-black"
                             size="lg"
                             onClick={handleEditSubmit}
                         >
@@ -405,7 +405,7 @@ export default function Shipment({ id }) {
                     </div>
                 </div>
             ) : (
-                <h1 className="text-white">Something went wrong, please try again</h1>
+                <h1 className="text-black">Something went wrong, please try again</h1>
             )
             }
         </div >
