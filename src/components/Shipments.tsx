@@ -37,7 +37,7 @@ const Shipments = () => {
     useEffect(() => {
         const fetchShipments = async () => {
             setLoadingPage(true);
-            const response = await api.get(`/api/v1/shipments/`);
+            const response = await api.get(`/api/v1/shipments/shipments`);
             setLoadingPage(false);
             if (response.ok && response.body?.data) {
                 setShipments(response.body.data);
@@ -56,7 +56,7 @@ const Shipments = () => {
     const handleDeleteConfirm = async () => {
         if (!selectedShipment) return;
         try {
-            const response = await api.delete(`/api/v1/shipments/${selectedShipment.id}`);
+            const response = await api.delete(`/api/v1/shipments/shipments/${selectedShipment.id}`);
             if (response.ok) {
                 setShipments(prev => prev.filter(shipment => shipment.id !== selectedShipment.id));
               toast.success("Shipment successfully deleted");
@@ -75,7 +75,7 @@ const Shipments = () => {
     const handleAddSubmit = async () => {
         const body = { shipment_name: newShipmentName };
         try {
-            const response = await api.post("/api/v1/shipments/", body);
+            const response = await api.post("/api/v1/shipments/shipments/", body);
             if (response.ok) {
                 toast.success("New shipment added successfully");
                 setShipments(prev => [...prev, response.body.data]);
