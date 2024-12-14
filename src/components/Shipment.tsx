@@ -125,7 +125,7 @@ export default function Shipment({ id }) {
         }
 
         const formData = new FormData();
-        formData.append("shipment", id); // Add the shipment ID
+        formData.append("shipment", id); 
         formData.append("document_name", newDocumentName);
         formData.append("document_file", newDocumentFile);
 
