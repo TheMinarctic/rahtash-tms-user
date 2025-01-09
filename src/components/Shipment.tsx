@@ -538,7 +538,7 @@ const [selectedContainer, setSelectedContainer] = useState(null);
                                     placeholder="Enter Custom Size"
                                     value={selectedContainer.custom_size}
                                     onChange={(e) => setSelectedContainer({ ...selectedContainer, custom_size: e.target.value })}
-                                    className="w-full p-2 border rounded"
+                                    className="w-full p-2 border rounded mt-2"
                                 />
                             )}
                             <div className="flex justify-end mt-4">
