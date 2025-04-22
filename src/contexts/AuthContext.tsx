@@ -29,7 +29,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshAccessToken = async () => {
     try {
-      const response = await fetch("https://api.rahtash-tms.ir/api/v1/users/token/refresh/", {
+      
+      const response = await fetch("https://api.rahtash-tms.ir/en/api/v1/user/token/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +62,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch("https://api.rahtash-tms.ir/api/v1/users/token/", {
+      debugger
+      const response = await fetch("https://api.rahtash-tms.ir/en/api/v1/user/token/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,11 +72,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       const data = await response.json();
 
-      if (data.success) {
-        setAccessToken(data.data.access);
-        setRefreshToken(data.data.refresh);
-        localStorage.setItem("accessToken", data.data.access);
-        localStorage.setItem("refreshToken", data.data.refresh);
+      if (data.access) {
+        setAccessToken(data.access);
+        setRefreshToken(data.refresh);
+        localStorage.setItem("accessToken", data.access);
+        localStorage.setItem("refreshToken", data.refresh);
         toast.success("Successfully logged in!");
         navigate("/shipments");
       } else {

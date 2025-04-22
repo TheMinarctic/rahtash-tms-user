@@ -15,7 +15,7 @@ export default function ShipmentPage() {
           {/* <Header /> */}
         </div>
 
-        <div className="flex-1 p-5 "> {/* Change min-h-full to min-h-0 */}
+        <div className="flex-1 p-5 h-screen "> {/* Change min-h-full to min-h-0 */}
           <Shipments />
         </div>
       </div>

@@ -3,11 +3,17 @@ import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { toast } from "sonner";
 import { useApi } from "@/contexts/ApiProvider";
-import { Plus, Save } from "lucide-react";
+import { Plus, Save, ChevronDown, ChevronUp } from "lucide-react";
 import { VscCloudDownload } from "react-icons/vsc";
-import { FaRegEdit } from "react-icons/fa";
+import { FaRegEdit, FaTruck, FaShippingFast, FaClipboardList } from "react-icons/fa";
 import { TiTrash } from "react-icons/ti";
 import { GoContainer } from "react-icons/go";
+import { MdDangerous } from "react-icons/md";
+import { HiOutlineOfficeBuilding } from "react-icons/hi";
+import { Input } from "./ui/input";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function Shipment({ id }) {
     const api = useApi();
@@ -17,77 +23,55 @@ export default function Shipment({ id }) {
     const [error, setError] = useState(null);
 
     // State for editable fields
-    const [shipmentName, setShipmentName] = useState('');
-    const [ladingNumber, setLadingNumber] = useState('');
-    const [numberOfContainers, setNumberOfContainers] = useState();
-    const [portOfLoading, setPortOfLoading] = useState('');
-    const [portOfDischarge, setPortOfDischarge] = useState('');
-    const [deliveryPlace, setDeliveryPlace] = useState('');
+    const [billOfLadingNumber, setBillOfLadingNumber] = useState('');
     const [containsDangerousGoods, setContainsDangerousGoods] = useState(false);
+    const [dateOfLoading, setDateOfLoading] = useState('');
+    const [note, setNote] = useState('');
 
-    // States for file uploads
-    const [msdsDocument, setMsdsDocument] = useState(null);
-    const [msdsDocumentName, setMsdsDocumentName] = useState('');
+    // Port selection states
+    const [portOfLoading, setPortOfLoading] = useState(null);
+    const [portOfDischarge, setPortOfDischarge] = useState(null);
+    const [placeOfDelivery, setPlaceOfDelivery] = useState(null);
+    const [isPortModalOpen, setIsPortModalOpen] = useState(false);
+    const [portType, setPortType] = useState(''); // 'loading', 'discharge', or 'delivery'
+    const [ports, setPorts] = useState([]);
+    const [portLoading, setPortLoading] = useState(false);
 
-    const [billOfLadingDocument, setBillOfLadingDocument] = useState(null);
-    const [billOfLadingName, setBillOfLadingName] = useState('');
-
-    const [packingList, setPackingList] = useState(null);
-    const [packingListName, setPackingListName] = useState('');
-
-    const [initialInvoice, setInitialInvoice] = useState(null);
-    const [initialInvoiceName, setInitialInvoiceName] = useState('');
-
-    const [finalInvoice, setFinalInvoice] = useState(null);
-    const [finalInvoiceName, setFinalInvoiceName] = useState('');
-
-    // Modal States for adding additional documents
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newDocumentName, setNewDocumentName] = useState('');
-    const [newDocumentFile, setNewDocumentFile] = useState(null);
-
-
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-const [containerToDelete, setContainerToDelete] = useState(null);
-
-// Function to handle the delete request
-const handleDeleteContainer = async () => {
-    if (containerToDelete) {
-        const response = await api.delete(`/api/v1/shipments/containers/${containerToDelete.id}/`);
-        if (response.ok) {
-            toast.success('Container deleted successfully');
-            fetchContainers(); // Re-fetch containers to update the state
-        } else {
-            toast.error('Error deleting container');
-        }
-        setIsDeleteModalOpen(false);
-        setContainerToDelete(null);
-    }
-};
-
-
+    // Container states
     const [containers, setContainers] = useState([]);
-const [isAddContainerModalOpen, setIsAddContainerModalOpen] = useState(false);
-const [newContainerNumber, setNewContainerNumber] = useState('');
-const [containerSize, setContainerSize] = useState('20ft'); // Default value
-const [customSize, setCustomSize] = useState('');
-const [isEditContainerModalOpen, setIsEditContainerModalOpen] = useState(false);
-const [selectedContainer, setSelectedContainer] = useState(null);
+    const [isAddContainerModalOpen, setIsAddContainerModalOpen] = useState(false);
+    const [isEditContainerModalOpen, setIsEditContainerModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [containerToDelete, setContainerToDelete] = useState(null);
+    const [selectedContainer, setSelectedContainer] = useState(null);
+    
+    // New container form
+    const [trackNumber, setTrackNumber] = useState('');
+    const [containerSize, setContainerSize] = useState(20);
+    const [containerOrder, setContainerOrder] = useState('');
+    const [containerType, setContainerType] = useState('dry');
 
-    const fetchShipment = async (url) => {
+    // UI states
+    const [expandedSections, setExpandedSections] = useState({
+        shipmentDetails: true,
+        containers: true,
+        parties: true
+    });
+
+    const fetchShipment = async () => {
         setLoadingPage(true);
         try {
-            const response = await api.get(url);
-            if (response.ok) {
-                setShipmentData(response.body.data);
-                // Populate the editable fields with fetched data
-                setShipmentName(response.body.data.shipment_name);
-                setDeliveryPlace(response.body.data.place_of_delivery);
-                setLadingNumber(response.body.data.bill_of_lading_number);
-                setNumberOfContainers(response.body.data.number_of_containers);
-                setPortOfLoading(response.body.data.port_of_loading);
-                setPortOfDischarge(response.body.data.port_of_discharge);
-                setContainsDangerousGoods(response.body.data.contains_dangerous_goods);
+            const response = await api.get(`/en/api/v1/shipment/detail/${id}/`);
+            if (response.ok && response.body?.data) {
+                const data = response.body.data;
+                setShipmentData(data);
+                setBillOfLadingNumber(data.bill_of_lading_number_id || '');
+                setContainsDangerousGoods(data.contains_dangerous_good || false);
+                setDateOfLoading(data.date_of_loading || '');
+                setNote(data.note || '');
+                setPortOfLoading(data.port_loading);
+                setPortOfDischarge(data.port_discharge);
+                setPlaceOfDelivery(data.place_delivery);
             } else {
                 setError('Error fetching shipment data');
             }
@@ -100,8 +84,8 @@ const [selectedContainer, setSelectedContainer] = useState(null);
 
     const fetchContainers = async () => {
         try {
-            const response = await api.get('/api/v1/shipments/containers/');
-            if (response.ok) {
+            const response = await api.get(`/en/api/v1/shipment/container/list/?shipment=${id}`);
+            if (response.ok && response.body?.data) {
                 setContainers(response.body.data);
             } else {
                 toast.error('Error fetching containers');
@@ -110,137 +94,164 @@ const [selectedContainer, setSelectedContainer] = useState(null);
             toast.error('Failed to fetch containers');
         }
     };
-    
+
+    const fetchPorts = async () => {
+        setPortLoading(true);
+        try {
+            const response = await api.get('/en/api/v1/shipment/port/list/');
+            if (response.ok && response.body?.data) {
+                setPorts(response.body.data);
+            }
+        } catch (error) {
+            toast.error('Failed to fetch ports');
+        } finally {
+            setPortLoading(false);
+        }
+    };
+
     useEffect(() => {
-        fetchShipment(`/api/v1/shipments/shipments/${id}`);
+        fetchShipment();
         fetchContainers();
     }, [id, api]);
 
-    const handleAddContainerSubmit = async () => {
-        const formData = {
-            shipment: id,
-            container_number: newContainerNumber,
-            container_size: containerSize,
-            custom_size: customSize
-        };
-    
-        const response = await api.post('/api/v1/shipments/containers/', formData);
-        if (response.ok) {
-            toast.success('Container added successfully');
-            fetchContainers(); // Re-fetch containers
-        } else {
-            toast.error('Error adding container');
-        }
-    
-        setIsAddContainerModalOpen(false);
-        clearAddContainerFields();
-    };
-    
-    const clearAddContainerFields = () => {
-        setNewContainerNumber('');
-        setContainerSize('20ft');
-        setCustomSize('');
-    };
-
-
-    const handleEditContainerSubmit = async () => {
-        const formData = {
-            container_number: selectedContainer.container_number,
-            container_size: selectedContainer.container_size,
-            custom_size: selectedContainer.custom_size
-        };
-    
-        const response = await api.patch(`/api/v1/shipments/containers/${selectedContainer.id}/`, formData);
-        if (response.ok) {
-            toast.success('Container edited successfully');
-            fetchContainers(); // Re-fetch containers
-        } else {
-            toast.error('Error editing container');
-        }
-    
-        setIsEditContainerModalOpen(false);
-        setSelectedContainer(null); // Reset selected container
-    };
-
     const handleEditSubmit = async () => {
         setLoadingPage(true);
+        try {
+            const formData = {
+                bill_of_lading_number_id: billOfLadingNumber,
+                contains_dangerous_good: containsDangerousGoods,
+                date_of_loading: dateOfLoading,
+                note: note,
+                port_loading: portOfLoading?.id || null,
+                port_discharge: portOfDischarge?.id || null,
+                place_delivery: placeOfDelivery?.id || null
+            };
 
-        // Ensure all fields are filled
-        if (!shipmentName) {
-            toast.error("Please fill the shipment name");
+            
+
+            const response = await api.patch(`/en/api/v1/shipment/update/${id}/`, formData);
+            if (response.ok) {
+                toast.success("Shipment updated successfully");
+                fetchShipment();
+            } else {
+                toast.error("Error updating shipment");
+            }
+        } catch (error) {
+            toast.error("Failed to update shipment");
+        } finally {
             setLoadingPage(false);
-            return;
-        }
-
-        if (!numberOfContainers || isNaN(numberOfContainers) || Number(numberOfContainers) <= 0) {
-            toast.error("Please enter a valid number for the number of containers");
-            setLoadingPage(false);
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("shipment_name", shipmentName);
-        formData.append("number_of_containers", numberOfContainers);
-        formData.append("bill_of_lading_number", ladingNumber);
-        formData.append("place_of_delivery", deliveryPlace);
-        formData.append("port_of_loading", portOfLoading);
-        formData.append("port_of_discharge", portOfDischarge);
-        formData.append("contains_dangerous_goods", String(containsDangerousGoods));
-
-        // Append documents if they have been uploaded
-        if (msdsDocument) {
-            formData.append("msds_document", msdsDocument);
-        }
-        if (billOfLadingDocument) {
-            formData.append("bill_of_lading_document", billOfLadingDocument);
-        }
-        if (packingList) {
-            formData.append("packing_list", packingList);
-        }
-        if (initialInvoice) {
-            formData.append("initial_invoice", initialInvoice);
-        }
-        if (finalInvoice) {
-            formData.append("final_invoice", finalInvoice);
-        }
-
-        const response = await api.patch(`/api/v1/shipments/shipments/${id}/`, formData);
-        if (response.ok) {
-            toast.success("Shipment edited successfully");
-            fetchShipment(`/api/v1/shipments/shipments/${id}`); // Re-fetch data to update state
-        } else {
-            toast.error("Error editing shipment");
         }
     };
 
-    const handleAddSubmit = async () => {
-        if (!newDocumentName || !newDocumentFile) {
-            toast.error("Please provide a name and a file for the additional document");
+    const handleAddContainer = async () => {
+        if (!trackNumber || !containerSize || !containerOrder || !containerType) {
+            toast.error("Please fill all required fields");
             return;
         }
-
-        const formData = new FormData();
-        formData.append("shipment", id); 
-        formData.append("document_name", newDocumentName);
-        formData.append("document_file", newDocumentFile);
-
-        const response = await api.post(`/api/v1/shipments/additional-documents/`, formData);
-        if (response.ok) {
-            toast.success("Document added successfully");
-            fetchShipment(`/api/v1/shipments/shipments/${id}`); // Re-fetch to update the additional documents
-            setNewDocumentName(''); // Clear the input field
-            setNewDocumentFile(null); // Clear the file
-            setIsModalOpen(false); // Close the modal
-        } else {
-            toast.error("Error adding document");
+    
+        try {
+            
+            const response = await api.post('/en/api/v1/shipment/container/create/', {
+                track_number: trackNumber,
+                size: containerSize, // Now an integer
+                order: parseInt(containerOrder, 10),
+                type: 1, // Make sure this matches your API's expected values
+                status: 1,
+                shipment: id
+            });
+    
+            if (response.ok) {
+                toast.success('Container added successfully');
+                fetchContainers();
+                setIsAddContainerModalOpen(false);
+                // Reset form
+                setTrackNumber('');
+                setContainerSize(20); // Reset to default 20ft
+                setContainerOrder('');
+                setContainerType('dry');
+            } else {
+                toast.error('Error adding container');
+            }
+        } catch (error) {
+            toast.error('Failed to add container');
+            console.error('Error:', error);
         }
     };
 
-    useEffect(() => {
-        fetchShipment(`/api/v1/shipments/shipments/${id}`);
-    }, [id, api]);
+    const handleEditContainer = async () => {
+        if (!selectedContainer) return;
 
-    if (loadingPage) {
+        try {
+            debugger
+            const response = await api.patch(
+                `/en/api/v1/shipment/container/update/${selectedContainer.id}/`,
+                {
+                    track_number: selectedContainer.track_number,
+                    size: selectedContainer.size,
+                    order: selectedContainer.order,
+                    
+                }
+            );
+
+            if (response.ok) {
+                toast.success('Container updated successfully');
+                fetchContainers();
+                setIsEditContainerModalOpen(false);
+            } else {
+                toast.error('Error updating container');
+            }
+        } catch (error) {
+            toast.error('Failed to update container');
+        }
+    };
+
+    const handleDeleteContainer = async () => {
+        if (!containerToDelete) return;
+
+        try {
+            const response = await api.delete(
+                `/en/api/v1/shipment/container/delete/${containerToDelete.id}/`
+            );
+
+            if (response.ok) {
+                toast.success('Container deleted successfully');
+                fetchContainers();
+            } else {
+                toast.error('Error deleting container');
+            }
+        } catch (error) {
+            toast.error('Failed to delete container');
+        } finally {
+            setIsDeleteModalOpen(false);
+            setContainerToDelete(null);
+        }
+    };
+
+    const openPortModal = (type) => {
+        setPortType(type);
+        fetchPorts();
+        setIsPortModalOpen(true);
+    };
+
+    const selectPort = (port) => {
+        if (portType === 'loading') {
+            setPortOfLoading(port);
+        } else if (portType === 'discharge') {
+            setPortOfDischarge(port);
+        } else if (portType === 'delivery') {
+            setPlaceOfDelivery(port);
+        }
+        setIsPortModalOpen(false);
+    };
+
+    const toggleSection = (section) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    };
+
+    if (loadingPage && !shipmentData) {
         return (
             <div className="flex justify-center mt-[27%]">
                 <div className="flex flex-row gap-2">
@@ -256,310 +267,359 @@ const [selectedContainer, setSelectedContainer] = useState(null);
         return <div className="text-black">{error}</div>;
     }
 
+    if (!shipmentData) {
+        return <div className="text-black">Shipment not found</div>;
+    }
+
+    const getStatusBadge = (status) => {
+        switch(status) {
+            case 1: return <Badge variant="secondary">Pending</Badge>;
+            case 2: return <Badge variant="default">Active</Badge>;
+            case 3: return <Badge variant="destructive">Completed</Badge>;
+            default: return <Badge variant="outline">Unknown</Badge>;
+        }
+    };
+
     return (
-
         <div className="mt-5 flex flex-col -mr-3 md:mx-auto md:-mr-0">
-    <Toaster />
-    {shipmentData ? (
-        <div className="bg-dark-purple 2xl:w-5/6 p-6 mx-auto rounded-lg">
-            <div className="flex flex-col">
-                <div className="flex justify-center mt-1 mb-12">
-                    <div className="flex items-center gap-4">
-                        <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
-                        <h1 className="text-xl text-center text-black font-bold">Shipment Detail</h1>
-                        <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
+            <Toaster />
+            <div className="bg-white shadow-sm rounded-lg p-6 mx-auto w-full max-w-6xl">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">Shipment Details</h1>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Status:</span>
+                        {getStatusBadge(shipmentData.status)}
                     </div>
                 </div>
 
-                {/* Shipment Details */}
-                <div className="grid lg:grid-cols-2 gap-8">
-                    {/* Existing shipment input fields go here */}
-                    <div>
-                        <label className="block text-black pb-2">Shipment Name:</label>
-                        <input
-                            type="text"
-                            value={shipmentName}
-                            onChange={(e) => setShipmentName(e.target.value)}
-                            className="w-full p-2 bg-gray-400 rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-black pb-2">Lading Number:</label>
-                        <input
-                            type="text"
-                            value={ladingNumber}
-                            onChange={(e) => setLadingNumber(e.target.value)}
-                            className="w-full p-2 bg-gray-400 rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-black pb-2">Containers Number:</label>
-                        <input
-                            type="text"
-                            value={numberOfContainers}
-                            onChange={(e) => setNumberOfContainers(e.target.value)}
-                            className="w-full p-2 bg-gray-400 rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-black pb-2">Loading Port:</label>
-                        <input
-                            type="text"
-                            value={portOfLoading}
-                            onChange={(e) => setPortOfLoading(e.target.value)}
-                            className="w-full p-2 bg-gray-400 rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-black pb-2">Discharge Port:</label>
-                        <input
-                            type="text"
-                            value={portOfDischarge}
-                            onChange={(e) => setPortOfDischarge(e.target.value)}
-                            className="w-full p-2 bg-gray-400 rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-black pb-2">Delivery Place:</label>
-                        <input
-                            type="text"
-                            value={deliveryPlace}
-                            onChange={(e) => setDeliveryPlace(e.target.value)}
-                            className="w-full p-2 bg-gray-400 rounded"
-                        />
-                    </div>
-                </div>
+                {/* Shipment Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Bill of Lading</CardTitle>
+                            <FaClipboardList className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{shipmentData.bill_of_lading_number_id || 'N/A'}</div>
+                        </CardContent>
+                    </Card>
 
-                {/* Documents Section */}
-                <div className="flex justify-center mt-10 mb-12">
-                    <div className="flex items-center gap-4">
-                        <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
-                        <h1 className="text-xl text-center text-black font-bold">Documents</h1>
-                        <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
-                    </div>
-                </div>
-
-                <div className="grid lg:grid-cols-2 gap-8">
-                    {/* Existing document upload inputs go here */}
-                    <div>
-                        <label className="block text-black pb-2">Bill of Lading Document:</label>
-                        <input
-                            type="file"
-                            onChange={(e) => {
-                                setBillOfLadingDocument(e.target.files[0]);
-                                setBillOfLadingName(e.target.files[0].name);
-                            }}
-                            accept=".pdf, .doc, .docx"
-                            className="w-full p-2 bg-gray-400 rounded"
-                        />
-                        {billOfLadingName && (
-                            <p className="text-primary flex gap-4 mt-2">
-                                {billOfLadingName}
-                                <a
-                                    href={shipmentData.bill_of_lading_document}
-                                    className="text-blue-400 underline"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    <VscCloudDownload className="w-6 h-6 text-green-500" />
-                                </a>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Loading Date</CardTitle>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                className="h-4 w-4 text-muted-foreground"
+                            >
+                                <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+                                <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
+                                <path d="M12 3v6" />
+                            </svg>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {new Date(shipmentData.date_of_loading).toLocaleDateString()}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {new Date(shipmentData.date_of_loading).toLocaleTimeString()}
                             </p>
-                        )}
-                    </div>
-                    {/* Additional document inputs can be added here... */}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Dangerous Goods</CardTitle>
+                            <MdDangerous className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {shipmentData.contains_dangerous_good ? 'Yes' : 'No'}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {/* Container Management Section */}
-                <div className="flex justify-center mt-10 mb-12">
-                    <div className="flex items-center gap-4">
-                        <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
-                        <h1 className="text-xl text-center text-black font-bold">Containers</h1>
-                        <div className="w-20 md:w-64 h-[0.5px] bg-zinc-800"></div>
-                    </div>
-                </div>
-                
-                <div className="w-full md:w-10/12 mx-auto">
-               
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-                        {containers.map(container => (
-                            <div key={container.id} className="flex  items-center gap-2">
+                {/* Shipment Details Section */}
+                <Card className="mb-6">
+                    <CardHeader 
+                        className="flex flex-row items-center justify-between cursor-pointer"
+                        onClick={() => toggleSection('shipmentDetails')}
+                    >
+                        <CardTitle className="flex items-center gap-2">
+                            <FaShippingFast className="h-5 w-5" />
+                            <span>Shipment Details</span>
+                        </CardTitle>
+                        {expandedSections.shipmentDetails ? <ChevronUp /> : <ChevronDown />}
+                    </CardHeader>
+                    {expandedSections.shipmentDetails && (
+                        <CardContent>
+                            <div className="grid lg:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 pb-1">Bill of Lading Number:</label>
+                                        <Input
+                                            value={billOfLadingNumber}
+                                            onChange={(e) => setBillOfLadingNumber(e.target.value)}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 pb-1">Contains Dangerous Goods:</label>
+                                        <select
+                                            value={containsDangerousGoods ? 'true' : 'false'}
+                                            onChange={(e) => setContainsDangerousGoods(e.target.value === 'true')}
+                                            className="w-full p-2 border rounded"
+                                        >
+                                            <option value="true">Yes</option>
+                                            <option value="false">No</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 pb-1">Date of Loading:</label>
+                                        <Input
+                                            type="datetime-local"
+                                            value={dateOfLoading}
+                                            onChange={(e) => setDateOfLoading(e.target.value)}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 pb-1">Port of Loading:</label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={portOfLoading?.title || 'Not selected'}
+                                                readOnly
+                                                className="w-full"
+                                            />
+                                            <Button variant="outline" onClick={() => openPortModal('loading')}>
+                                                Select
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 pb-1">Port of Discharge:</label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={portOfDischarge?.title || 'Not selected'}
+                                                readOnly
+                                                className="w-full"
+                                            />
+                                            <Button variant="outline" onClick={() => openPortModal('discharge')}>
+                                                Select
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 pb-1">Place of Delivery:</label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={placeOfDelivery?.title || 'Not selected'}
+                                                readOnly
+                                                className="w-full"
+                                            />
+                                            <Button variant="outline" onClick={() => openPortModal('delivery')}>
+                                                Select
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 pb-1">Note:</label>
+                                <Input
+                                    value={note}
+                                    onChange={(e) => setNote(e.target.value)}
+                                    className="w-full"
+                                />
+                            </div>
+                        </CardContent>
+                    )}
+                </Card>
 
-                                <div className="flex gap-4 items-center ">
-                                <GoContainer className="text-zinc-900 w-6 h-6" />
-                              <div className="flex flex-col">
-
-                              <span className="">number : {container.container_number}</span>
-                              <span className="">size : {container.container_size !== 'custom' ? container.container_size : container.custom_size + 'ft' }</span>
-
-                              </div>
-                                
+                {/* Parties Section */}
+                <Card className="mb-6">
+                    <CardHeader 
+                        className="flex flex-row items-center justify-between cursor-pointer"
+                        onClick={() => toggleSection('parties')}
+                    >
+                        <CardTitle className="flex items-center gap-2">
+                            <HiOutlineOfficeBuilding className="h-5 w-5" />
+                            <span>Parties</span>
+                        </CardTitle>
+                        {expandedSections.parties ? <ChevronUp /> : <ChevronDown />}
+                    </CardHeader>
+                    {expandedSections.parties && (
+                        <CardContent>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                {/* Carrier Company */}
+                                <div className="border rounded-lg p-4">
+                                    <h3 className="text-sm font-medium text-gray-500 mb-2">Carrier Company</h3>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={shipmentData.carrier_company?.logo} />
+                                            <AvatarFallback>{shipmentData.carrier_company?.name?.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{shipmentData.carrier_company?.name || 'N/A'}</p>
+                                            <p className="text-sm text-gray-500">{shipmentData.carrier_company?.category?.title || ''}</p>
+                                        </div>
+                                    </div>
                                 </div>
 
-                               
-                           <div className="flex items-center  ml-4 -mt-1 ">
+                                {/* Forwarding Company */}
+                                <div className="border rounded-lg p-4">
+                                    <h3 className="text-sm font-medium text-gray-500 mb-2">Forwarding Company</h3>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={shipmentData.forward_company?.logo} />
+                                            <AvatarFallback>{shipmentData.forward_company?.name?.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{shipmentData.forward_company?.name || 'N/A'}</p>
+                                            <p className="text-sm text-gray-500">{shipmentData.forward_company?.category?.title || ''}</p>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                
-                           <button
-                                    onClick={() => {
-                                      setSelectedContainer(container);
-                                      setIsEditContainerModalOpen(true);
-                                    }} 
-                                    className="text-blue-500 underline"
-                                >
-                                    <FaRegEdit className="w-6 h-6 text-green-500" />
-                                </button>
-
-                                    
-                                <button
-    onClick={() => {
-        setContainerToDelete(container);
-        setIsDeleteModalOpen(true);
-    }} 
-    className="text-blue-500 underline"
->
-    <TiTrash className="w-7 h-7 text-red-500" />
-</button>
-
-
-                           </div>
-
-
-                                
+                                {/* Driver */}
+                                <div className="border rounded-lg p-4">
+                                    <h3 className="text-sm font-medium text-gray-500 mb-2">Driver</h3>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={shipmentData.driver?.image} />
+                                            <AvatarFallback>{shipmentData.driver?.title?.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{shipmentData.driver?.title || 'N/A'}</p>
+                                            <div className="flex items-center gap-1">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <svg
+                                                        key={i}
+                                                        className={`h-4 w-4 ${i < (shipmentData.driver?.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        ))}
-                        {containers.length === 0 && (
-                            <p className="text-gray-400">No containers available</p>
-                        )}
-                    </div>
 
-                    <div className="flex justify-between mb-4 mt-8">
-                        <button onClick={() => setIsAddContainerModalOpen(true)} className="bg-zinc-900 text-white p-2 rounded">
-                            + Add Container
-                        </button>
-                    </div>
-                </div>
+                            {/* Step */}
+                            <div className="mt-6 border rounded-lg p-4">
+                                <h3 className="text-sm font-medium text-gray-500 mb-2">Current Step</h3>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-blue-600">
+                                        <span className="font-medium">{shipmentData.step?.order || 'N/A'}</span>
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">{shipmentData.step?.title || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    )}
+                </Card>
 
-                {/* Add Container Modal */}
-                {isAddContainerModalOpen && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
-                            <h2 className="text-xl font-bold mb-4">Add New Container</h2>
-                            <label>Container Number</label>
-                            <input
-                                value={newContainerNumber}
-                                onChange={(e) => setNewContainerNumber(e.target.value)}
-                                className="w-full p-2 border rounded"
-                            />
-                            <label>Container Size</label>
-                            <select
-                                value={containerSize}
-                                onChange={(e) => {
-                                    setContainerSize(e.target.value);
-                                    if(e.target.value !== "custom"){
-                                        setCustomSize('');
-                                    }
-                                }}
-                                className="w-full p-2 border rounded"
-                            >
-                                <option value="20ft">20ft</option>
-                                <option value="40ft">40ft</option>
-                                <option value="custom">Custom Size</option>
-                            </select>
-                            {containerSize === 'custom' && (
-                                <input
-                                    placeholder="Enter Custom Size"
-                                    value={customSize}
-                                    onChange={(e) => setCustomSize(e.target.value)}
-                                    className="w-full p-2 border rounded"
-                                />
+                {/* Containers Section */}
+                <Card className="mb-6">
+                    <CardHeader 
+                        className="flex flex-row items-center justify-between cursor-pointer"
+                        onClick={() => toggleSection('containers')}
+                    >
+                        <CardTitle className="flex items-center gap-2">
+                            <GoContainer className="h-5 w-5" />
+                            <span>Containers ({containers.length})</span>
+                        </CardTitle>
+                        {expandedSections.containers ? <ChevronUp /> : <ChevronDown />}
+                    </CardHeader>
+                    {expandedSections.containers && (
+                        <CardContent>
+                            {containers.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {containers.map(container => (
+                                        <div key={container.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 rounded-full bg-blue-100 text-blue-600">
+                                                        <GoContainer className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium">#{container.track_number}</p>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <Badge variant="outline">{container.size}</Badge>
+                                                            <Badge variant="outline">{container.type}</Badge>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedContainer(container);
+                                                            setIsEditContainerModalOpen(true);
+                                                        }}
+                                                        className="text-blue-500 hover:text-blue-700"
+                                                        title="Edit"
+                                                    >
+                                                        <FaRegEdit className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setContainerToDelete(container);
+                                                            setIsDeleteModalOpen(true);
+                                                        }}
+                                                        className="text-red-500 hover:text-red-700"
+                                                        title="Delete"
+                                                    >
+                                                        <TiTrash className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 pt-3 border-t">
+                                                <p className="text-sm text-gray-500">Order: {container.order || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8">
+                                    <GoContainer className="mx-auto h-12 w-12 text-gray-400" />
+                                    <h3 className="mt-2 text-sm font-medium text-gray-900">No containers</h3>
+                                    <p className="mt-1 text-sm text-gray-500">Add containers to this shipment</p>
+                                    <div className="mt-6">
+                                        <Button onClick={() => setIsAddContainerModalOpen(true)}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Container
+                                        </Button>
+                                    </div>
+                                </div>
                             )}
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    onClick={() => setIsAddContainerModalOpen(false)}
-                                    className="mr-2 bg-red-500 hover:bg-red-400 text-white p-2 rounded"
-                                >
-                                    Cancel
-                                </button>
-                                <button onClick={handleAddContainerSubmit} className="bg-primary text-white p-2 rounded">
-                                    Add Container
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-
-{isDeleteModalOpen && (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
-            <p>Are you sure you want to delete container {containerToDelete.container_number}?</p>
-            <div className="flex justify-end mt-4">
-                <button
-                    onClick={() => setIsDeleteModalOpen(false)}
-                    className="mr-2 bg-red-500 hover:bg-red-400 text-white p-2 rounded"
-                >
-                    Cancel
-                </button>
-                <button 
-                    onClick={handleDeleteContainer}
-                    className="bg-primary text-white p-2 rounded"
-                >
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-)}
-
-                {/* Edit Container Modal */}
-                {isEditContainerModalOpen && selectedContainer && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
-                            <h2 className="text-xl font-bold mb-4">Edit Container</h2>
-                            <label>Container Number</label>
-                            <input
-                                value={selectedContainer.container_number}
-                                onChange={(e) => setSelectedContainer({ ...selectedContainer, container_number: e.target.value })}
-                                className="w-full p-2 border rounded"
-                            />
-                            <label>Container Size</label>
-                            <select
-                                value={selectedContainer.container_size}
-                                onChange={(e) => setSelectedContainer({ ...selectedContainer, container_size: e.target.value })}
-                                className="w-full p-2 border rounded"
-                            >
-                                <option value="20ft">20ft</option>
-                                <option value="40ft">40ft</option>
-                                <option value="custom">Custom Size</option>
-                            </select>
-                            {selectedContainer.container_size === 'custom' && (
-                                <input
-                                    placeholder="Enter Custom Size"
-                                    value={selectedContainer.custom_size}
-                                    onChange={(e) => setSelectedContainer({ ...selectedContainer, custom_size: e.target.value })}
-                                    className="w-full p-2 border rounded mt-2"
-                                />
-                            )}
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    onClick={() => setIsEditContainerModalOpen(false)}
-                                    className="mr-2 bg-red-500 hover:bg-red-400 text-white p-2 rounded"
-                                >
-                                    Cancel
-                                </button>
-                                <button onClick={handleEditContainerSubmit} className="bg-primary text-white p-2 rounded">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                        </CardContent>
+                    )}
+                    {containers.length > 0 && expandedSections.containers && (
+                        <CardFooter className="flex justify-end">
+                            <Button onClick={() => setIsAddContainerModalOpen(true)}>
+                                <Plus className="mr-2 h-4 w-4" /> Add Container
+                            </Button>
+                        </CardFooter>
+                    )}
+                </Card>
 
                 {/* Save Changes Button */}
-                <div className="mt-10 w-full flex justify-center px-[5%]">
+                <div className="flex justify-end">
                     <Button
-                        className="w-2/3 hover:bg-green-400 bg-green-500 text-white"
+                        className="w-full md:w-auto"
                         size="lg"
                         onClick={handleEditSubmit}
                     >
@@ -567,11 +627,207 @@ const [selectedContainer, setSelectedContainer] = useState(null);
                     </Button>
                 </div>
             </div>
-        </div>
-    ) : (
-        <h1 className="text-black">Something went wrong, please try again</h1>
-    )}
-</div>
 
+            {/* Port Selection Modal */}
+            {isPortModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
+                        <h2 className="text-xl font-bold mb-4">
+                            Select {portType === 'loading' ? 'Port of Loading' : 
+                                  portType === 'discharge' ? 'Port of Discharge' : 'Place of Delivery'}
+                        </h2>
+                        {portLoading ? (
+                            <div className="flex justify-center py-8">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {ports.map(port => (
+                                    <div 
+                                        key={port.id} 
+                                        className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                                        onClick={() => selectPort(port)}
+                                    >
+                                        <h3 className="font-medium">{port.title}</h3>
+                                        <p className="text-sm text-gray-500">ID: {port.id}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex justify-end mt-4">
+                            <Button 
+                                variant="outline"
+                                onClick={() => setIsPortModalOpen(false)}
+                                className="mr-2"
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Container Modal */}
+            {isAddContainerModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
+                        <h2 className="text-xl font-bold mb-4">Add New Container</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 pb-1">Track Number:</label>
+                                <Input
+                                    value={trackNumber}
+                                    onChange={(e) => setTrackNumber(e.target.value)}
+                                    className="w-full"
+                                    placeholder="Enter container number"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 pb-1">Size:</label>
+                                    <select
+    value={containerSize}
+    onChange={(e) => setContainerSize(parseInt(e.target.value, 10))}
+    className="w-full p-2 border rounded"
+>
+    <option value={20}>20ft</option>
+    <option value={40}>40ft</option>
+    <option value={45}>45ft</option>
+</select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 pb-1">Type:</label>
+                                    <select
+                                        value={containerType}
+                                        onChange={(e) => setContainerType(e.target.value)}
+                                        className="w-full p-2 border rounded"
+                                    >
+                                        <option value="dry">Dry</option>
+                                        <option value="reefer">Reefer</option>
+                                        <option value="open-top">Open Top</option>
+                                        <option value="flat-rack">Flat Rack</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 pb-1">Order:</label>
+                                <Input
+                                    type="number"
+                                    value={containerOrder}
+                                    onChange={(e) => setContainerOrder(e.target.value)}
+                                    className="w-full"
+                                    placeholder="Enter loading order"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex justify-end mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsAddContainerModalOpen(false)}
+                                className="mr-2"
+                            >
+                                Cancel
+                            </Button>
+                            <Button onClick={handleAddContainer}>
+                                Add Container
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Container Modal */}
+            {isEditContainerModalOpen && selectedContainer && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
+                        <h2 className="text-xl font-bold mb-4">Edit Container</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 pb-1">Track Number:</label>
+                                <Input
+                                    value={selectedContainer.track_number}
+                                    onChange={(e) => setSelectedContainer({...selectedContainer, track_number: e.target.value})}
+                                    className="w-full"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 pb-1">Size:</label>
+                                    <select
+                                        value={selectedContainer.size}
+                                        onChange={(e) => setSelectedContainer({...selectedContainer, size: e.target.value})}
+                                        className="w-full p-2 border rounded"
+                                    >
+                                        <option value="20ft">20ft</option>
+                                        <option value="40ft">40ft</option>
+                                        <option value="45ft">45ft</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 pb-1">Type:</label>
+                                    <select
+                                        value={selectedContainer.type}
+                                        onChange={(e) => setSelectedContainer({...selectedContainer, type: e.target.value})}
+                                        className="w-full p-2 border rounded"
+                                    >
+                                        <option value="dry">Dry</option>
+                                        <option value="reefer">Reefer</option>
+                                        <option value="open-top">Open Top</option>
+                                        <option value="flat-rack">Flat Rack</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 pb-1">Order:</label>
+                                <Input
+                                    type="number"
+                                    value={selectedContainer.order}
+                                    onChange={(e) => setSelectedContainer({...selectedContainer, order: e.target.value})}
+                                    className="w-full"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex justify-end mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsEditContainerModalOpen(false)}
+                                className="mr-2"
+                            >
+                                Cancel
+                            </Button>
+                            <Button onClick={handleEditContainer}>
+                                Save Changes
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
+                        <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+                        <p className="mb-4">Are you sure you want to delete container <span className="font-medium">#{containerToDelete?.track_number}</span>?</p>
+                        <p className="text-sm text-gray-500">This action cannot be undone.</p>
+                        <div className="flex justify-end mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsDeleteModalOpen(false)}
+                                className="mr-2"
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                variant="destructive"
+                                onClick={handleDeleteContainer}
+                            >
+                                Delete Container
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
