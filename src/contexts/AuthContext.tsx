@@ -89,7 +89,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signup = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      const response = await fetch("https://api.rahtash-tms.ir/api/v1/users/signup/", {
+      debugger
+      const response = await fetch("https://api.rahtash-tms.ir/en/api/v1/user/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,11 +104,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       const data = await response.json();
 
-      if (data.success) {
+      if (data.status) {
         toast.success("Account created successfully!");
         await login(email, password);
       } else {
         toast.error("Failed to create account");
+        if(data.error.email){
+          toast.error(data.error.email[0]);
+        }
       }
     } catch (error) {
       toast.error("An error occurred during signup");
