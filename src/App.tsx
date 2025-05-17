@@ -1,10 +1,11 @@
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useAuth } from "@/contexts/AuthContext";
-import ShipmentPage from "./pages/ShipmentsPage";
+import ShipmentList from "./pages/shipments/ShipmentList";
 import SingleShipment from "./pages/SingleShipment";
 import AppProviders from "./providers/AppProviders";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ShipmentDetail from "./pages/shipments/ShipmentDetail";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
@@ -32,7 +33,7 @@ const AppRoutes = () => {
         path="/shipments"
         element={
           <ProtectedRoute>
-            <ShipmentPage />
+            <ShipmentList />
           </ProtectedRoute>
         }
       />
@@ -40,7 +41,8 @@ const AppRoutes = () => {
         path="/shipments/:id"
         element={
           <ProtectedRoute>
-            <SingleShipment />
+            {/* <SingleShipment /> */}
+            <ShipmentDetail />
           </ProtectedRoute>
         }
       />
