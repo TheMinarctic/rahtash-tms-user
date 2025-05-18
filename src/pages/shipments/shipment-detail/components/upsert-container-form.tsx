@@ -123,19 +123,19 @@ const UpsertContainerForm = ({ initialData, setIsOpen, mutate, shipmentId }: Pro
                     />
                   </FormControl>
 
-                  {sizeType === "custom" ||
+                  {(sizeType === "custom" ||
                     (form.watch("size") &&
                       !Object.entries(ContainerSizeEnum).find(
                         ([key]) => form.watch("size") === Number(key)
-                      ) && (
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value))}
-                          />
-                        </FormControl>
-                      ))}
+                      ))) && (
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      />
+                    </FormControl>
+                  )}
 
                   <FormMessage />
                 </FormItem>
