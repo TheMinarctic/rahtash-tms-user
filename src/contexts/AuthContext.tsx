@@ -21,15 +21,18 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem("accessToken"));
-  const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem("refreshToken"));
+  const [accessToken, setAccessToken] = useState<string | null>(
+    localStorage.getItem("accessToken")
+  );
+  const [refreshToken, setRefreshToken] = useState<string | null>(
+    localStorage.getItem("refreshToken")
+  );
   const navigate = useNavigate();
 
   const isAuthenticated = !!accessToken;
 
   const refreshAccessToken = async () => {
     try {
-      
       const response = await fetch("https://api.rahtash-tms.ir/en/api/v1/user/token/", {
         method: "POST",
         headers: {
@@ -38,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         body: JSON.stringify({ refresh: refreshToken }),
       });
       const data = await response.json();
-      
+
       if (data.success) {
         setAccessToken(data.data.access);
         localStorage.setItem("accessToken", data.data.access);
@@ -62,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      debugger
+      debugger;
       const response = await fetch("https://api.rahtash-tms.ir/en/api/v1/user/token/", {
         method: "POST",
         headers: {
@@ -78,7 +81,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem("accessToken", data.access);
         localStorage.setItem("refreshToken", data.refresh);
         toast.success("Successfully logged in!");
-        navigate("/shipments");
+        // navigate("/shipments");
+        window.location.href = "/shipments";
       } else {
         toast.error("Invalid credentials");
       }
@@ -89,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signup = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      debugger
+      debugger;
       const response = await fetch("https://api.rahtash-tms.ir/en/api/v1/user/signup/", {
         method: "POST",
         headers: {
@@ -109,7 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await login(email, password);
       } else {
         toast.error("Failed to create account");
-        if(data.error.email){
+        if (data.error.email) {
           toast.error(data.error.email[0]);
         }
       }
@@ -123,7 +127,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setRefreshToken(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    navigate("/login");
+    // navigate("/login");
+    window.location.href = "/login";
   };
 
   return (
