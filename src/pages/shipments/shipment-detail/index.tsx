@@ -126,7 +126,7 @@ export default function ShipmentDetailPage() {
                 />
 
                 <RelatedEntity
-                  title="Forward Company"
+                  title="Forwarder Company"
                   showEmptyText={!shipment?.forward_company}
                   items={[
                     { title: "name", value: shipment?.forward_company?.name },

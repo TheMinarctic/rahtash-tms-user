@@ -3,19 +3,18 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { axios } from "@/lib/axios";
 import { AxiosResponse } from "axios";
+import { ApiResponse } from "@/types/api";
 import { GoContainer } from "react-icons/go";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Edit, Plus, Trash } from "lucide-react";
+import { ContainerTypeEnum } from "@/enums/container-type";
 import UpsertContainerForm from "./upsert-container-form";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { serverErrorToast } from "@/utils/errors/server-error-toast";
 import { ModuleCardData } from "@/components/common/module-card-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ApiResponse } from "@/types/api";
-import { ContainerTypeEnum } from "@/enums/container-type";
-import { ContainerStatusEnum } from "@/enums/container-status";
 
 const ShipmentDetailContainers = ({ id }: { id: string | number }) => {
   const [deleteContainerLoading, setDeleteContainerLoading] = useState(false);
@@ -62,9 +61,6 @@ const ShipmentDetailContainers = ({ id }: { id: string | number }) => {
                         <div className="flex items-center flex-wrap gap-2 mt-1">
                           <Badge variant="outline">{container.size}ft</Badge>
                           <Badge variant="outline">{ContainerTypeEnum[container.type]}</Badge>
-                          <Badge variant={container.status === 2 ? "destructive" : "outline"}>
-                            {ContainerStatusEnum[container.status]}
-                          </Badge>
                         </div>
                       </div>
                     </div>

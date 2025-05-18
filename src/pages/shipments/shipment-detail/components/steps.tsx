@@ -31,7 +31,7 @@ const ShipmentDetailSteps = ({ shipment }: { shipment?: ApiResponse.Shipment }) 
 
                     // NEXT STEPS
                     item.order > shipment?.step?.order &&
-                      "bg-muted-foreground text-muted opacity-30 ring-muted-foreground"
+                      "bg-gray-300 ring-gray-400 dark:bg-gray-700 dark:ring-gray-600"
                   )}
                 >
                   {index + 1}

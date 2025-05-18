@@ -47,7 +47,7 @@ const EditShipmentFormFields = ({ initialData }: { initialData?: any }) => {
         name="forward_company"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Forward Company</FormLabel>
+            <FormLabel>Forwarder Company</FormLabel>
             <FormControl>
               <Combobox
                 value={field.value}
