@@ -117,4 +117,21 @@ export declare namespace ApiResponse {
     id: number;
     email: string;
   }
+
+  type Container = {
+    id: number;
+    shipment: {
+      id: number;
+      bill_of_lading_number_id: string;
+      status: number;
+      creator?: Creator;
+    };
+    track_number: string;
+    size: number;
+    status?: number;
+    order: number;
+    type: number;
+    created_at: string;
+    updated_at: string;
+  };
 }

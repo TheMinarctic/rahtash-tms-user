@@ -19,7 +19,7 @@ import { AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { serverErrorToast } from "@/utils/errors/server-error-toast";
 
-export default function ShipmentList() {
+export default function ShipmentListPage() {
   const navigate = useNavigate();
 
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -29,7 +29,7 @@ export default function ShipmentList() {
 
   const [searchParams] = useSearchParams();
   const { data, error, isLoading, mutate } = useSWR<ApiRes<any[]>>(
-    `/en/api/v1/shipment/list?${searchParams.toString()}`,
+    `/en/api/v1/shipment/list?${searchParams.toString()}`
   );
 
   const handleViewDetails = (shipmentId) => {

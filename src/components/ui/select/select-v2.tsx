@@ -137,7 +137,11 @@ const SelectV2 = ({
             {items
               ?.filter((item) => item.name.includes(search))
               ?.map((item) => (
-                <SelectItem className="capitalize" key={item.value} value={String(item.value)}>
+                <SelectItem
+                  className="capitalize"
+                  key={item.value}
+                  value={JSON.stringify(item.value)}
+                >
                   {item.name}
                 </SelectItem>
               ))}

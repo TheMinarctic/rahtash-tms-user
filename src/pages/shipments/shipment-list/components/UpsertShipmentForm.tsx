@@ -22,7 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import SelectV2 from "@/components/ui/select/select-v2";
 import { DialogBody, DialogFooter } from "@/components/ui/dialog";
 import { serverErrorToast } from "@/utils/errors/server-error-toast";
-import { UpsetShipmentFormValues, upsetShipmentSchema } from "../schema/upset-shipment-schema";
+import { UpsetShipmentFormValues, upsetShipmentSchema } from "../../schema/upset-shipment-schema";
 import EditShipmentFormFields from "./EditShipmentFormFields";
 
 const UpsertShipmentForm = ({

@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { useFormContext } from "react-hook-form";
 import { Combobox } from "@/components/ui/combobox";
-import { UpsetShipmentFormValues } from "../schema/upset-shipment-schema";
+import { UpsetShipmentFormValues } from "../../schema/upset-shipment-schema";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const EditShipmentFormFields = ({ initialData }: { initialData?: any }) => {
@@ -206,7 +206,9 @@ const EditShipmentFormFields = ({ initialData }: { initialData?: any }) => {
                 items={
                   users.data?.data?.map((item) => ({
                     value: item.id,
-                    name: `${item.first_name ? item.first_name : ""} ${item.last_name ? item.last_name : ""}`,
+                    name: `${item.first_name ? item.first_name : ""} ${
+                      item.last_name ? item.last_name : ""
+                    }`,
                   })) || []
                 }
               />
